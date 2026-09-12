@@ -1,0 +1,165 @@
+:root {
+  --rag-text: #111;
+  --rag-muted: #666;
+  --rag-faint: #999;
+  --rag-border: #e5e5e5;
+  --rag-border-light: #ebebeb;
+  --rag-subtle: #f5f5f5;
+}
+
+// umi 不自带这个 reset。少了它，width:100% 再加 padding 会把元素撑出视口
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--rag-text);
+  background: #fff;
+  -webkit-font-smoothing: antialiased;
+  // iOS 上拉到底部时不要出现橡皮筋白边
+  overscroll-behavior-y: none;
+}
+
+// 流式输出时跟在文字后面的光标，比转圈更像"正在写"
+.rag-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -0.15em;
+  background: var(--rag-text);
+  animation: rag-blink 1s steps(2, start) infinite;
+}
+
+@keyframes rag-blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+// 回答正文：按文章排版，不是聊天气泡
+.rag-answer {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--rag-text);
+  word-break: break-word;
+
+  p {
+    margin: 0 0 0.75em;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  ol,
+  ul {
+    margin: 0 0 0.75em;
+    padding-left: 1.4em;
+  }
+
+  li {
+    margin-bottom: 0.3em;
+  }
+
+  code {
+    padding: 1px 5px;
+    font-size: 0.88em;
+    background: var(--rag-subtle);
+    border-radius: 4px;
+  }
+
+  pre {
+    padding: 12px 14px;
+    overflow-x: auto;
+    background: var(--rag-subtle);
+    border-radius: 8px;
+
+    code {
+      padding: 0;
+      background: none;
+    }
+  }
+
+  h1,
+  h2,
+  h3 {
+    margin: 1em 0 0.5em;
+    font-size: 1.05em;
+    font-weight: 600;
+  }
+}
+
+// 例句、引用开关这类次要可点文本
+.rag-quiet-link {
+  color: var(--rag-muted);
+  cursor: pointer;
+  transition: color 0.15s;
+
+  &:hover {
+    color: var(--rag-text);
+  }
+}
+
+// 滚动条收细，默认那条太抢眼
+.rag-scroll {
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #d9d9d9;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+// 内容居中并限宽，移动端收窄留白
+.rag-container {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 24px;
+
+  @media (max-width: 800px) {
+    padding: 0 16px;
+  }
+}
+
+// 撑满可视高度。用 dvh 而不是 vh：移动端浏览器地址栏收起时 vh 会算错
+.rag-fullheight {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+// iPhone 底部小横条区域
+.rag-safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+// 输入框在 iOS 上小于 16px 会触发自动放大，锁死
+.ant-sender textarea {
+  font-size: 16px !important;
+}
+
+@media (min-width: 801px) {
+  .ant-sender textarea {
+    font-size: 15px !important;
+  }
+}
