@@ -11,3 +11,8 @@ uploads/
 dist/
 build/
 *.egg
+node_modules/
+.umi/
+.umi-production/
+# 前端构建产物（部署时用 pnpm build 生成）
+static/

@@ -1,9 +1,12 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from rag.api.chat import router as chat_router
+from rag.api.conversations import router as conversations_router
 from rag.api.documents import router as documents_router
 from rag.api.health import router as health_router
 from rag.config import get_settings
@@ -49,6 +52,7 @@ def create_app() -> FastAPI:
     app.include_router(health_router)
     app.include_router(documents_router)
     app.include_router(chat_router)
+    app.include_router(conversations_router)
 
     # 装饰器注册路由：GET /  → 下面这个函数处理（类似 app.get('/', ...)）
     @app.get("/")
@@ -64,10 +68,29 @@ def create_app() -> FastAPI:
                 "ingest": "POST /documents/{id}/ingest",
                 "search": "GET /search?q=...",
                 "chat": "POST /chat",
+                "chat_stream": "POST /chat/stream (SSE)",
+                "conversations": "GET /conversations",
+                "ui": "GET /ui/ (需先 pnpm build)",
             },
         }
 
+    _mount_frontend(app)
     return app
+
+
+# 前端构建产物目录（frontend/.umirc.ts 里的 outputPath）
+FRONTEND_DIST = Path(__file__).resolve().parents[2] / "static" / "ui"
+
+
+def _mount_frontend(app: FastAPI) -> None:
+    """把 umi 构建产物挂在 /ui 下。
+
+    和 API 同源的好处：iframe 里的页面调接口不跨域，也不用配 CORS。
+    没构建过就跳过，不影响纯后端开发。
+    """
+    if not FRONTEND_DIST.is_dir():
+        return
+    app.mount("/ui", StaticFiles(directory=FRONTEND_DIST, html=True), name="ui")
 
 
 # 模块加载时创建 app；uvicorn 用 rag.main:app 找到这个变量
