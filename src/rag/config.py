@@ -28,6 +28,16 @@ class Settings(BaseSettings):
     siliconflow_base_url: str | None = None
     embedding_model: str = "Pro/BAAI/bge-m3"
 
+    # 生成模型（DeepSeek，OpenAI 兼容接口）
+    deepseek_api_key: str | None = None
+    deepseek_base_url: str | None = None
+    llm_model: str = "deepseek-chat"
+    llm_temperature: float = 0.3
+    llm_timeout: int = 60
+
+    # 检索
+    retrieval_top_k: int = 5
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]

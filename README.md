@@ -2,14 +2,16 @@
 
 FastAPI + LangChain 知识库问答服务（学习项目）。接口成熟后可接到 PageIo / local-agent。
 
-## 当前阶段：P1 文档入库
+## 当前阶段：P2 检索问答
 
 - `GET /health` 探活（进程 ok 即 200；`db` 字段单独标库状态）
 - `POST /documents` 上传 `.txt` / `.md`
 - `POST /documents/{id}/ingest` 切块 + 向量化（幂等）
 - `GET /documents`、`GET /documents/{id}` 列表与详情
+- `GET /search` 只做向量检索（调试用）
+- `POST /chat` 检索 + 生成，返回答案与引用片段
 
-检索问答（`/chat`、流式）在 P2 / P3。
+流式输出与会话历史在 P3。
 
 ## 环境要求
 
@@ -44,6 +46,14 @@ curl -s -F "file=@README.md" http://127.0.0.1:8000/documents
 curl -s -X POST http://127.0.0.1:8000/documents/<id>/ingest
 
 curl -s http://127.0.0.1:8000/documents
+
+# 只看检索结果（中文参数要 urlencode，否则检索质量会变差）
+curl -s -G --data-urlencode "q=这个项目用什么数据库" http://127.0.0.1:8000/search
+
+# 完整问答
+curl -s -X POST http://127.0.0.1:8000/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"question":"这个项目用什么数据库？"}'
 ```
 
 约定：进程正常就返回 HTTP 200；数据库问题只体现在 `/health` 的 `db` 字段（`ok` / `error` / `not_configured`）。
@@ -61,8 +71,12 @@ src/rag/
   schemas.py          # 请求响应结构
   api/health.py       # /health
   api/documents.py    # /documents
+  api/chat.py         # /search、/chat
   services/embedding.py  # embedding 客户端
   services/ingest.py     # 读文件 → 切块 → 算向量 → 写库
+  services/retrieval.py  # 向量检索（pgvector 余弦 Top-K）
+  services/llm.py        # DeepSeek 客户端
+  services/chat.py       # prompt 组装 + 问答编排
   scripts/init_db.py     # 建表：uv run rag-init-db
 docs/                 # 需求卡与规划
 ```
@@ -105,8 +119,9 @@ make PG_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk install
 | [docs/路线图.md](docs/路线图.md) | 总纲：目标、技术选型、P0–P4 进度与后续需求细节 |
 | [docs/需求卡-模板与P0.md](docs/需求卡-模板与P0.md) | 需求卡模板 + P0 实例 |
 | [docs/需求卡-P1.md](docs/需求卡-P1.md) | P1 文档入库 |
+| [docs/需求卡-P2.md](docs/需求卡-P2.md) | P2 检索问答 |
 | [AGENTS.md](AGENTS.md) | 项目上下文速览 |
 
-## 下一步（P2）
+## 下一步（P3）
 
-检索 + 拼 prompt + 非流式 `/chat`，返回引用片段。详见路线图。
+SSE 流式 `/chat/stream` + 会话历史（`conversations` / `messages`）。详见路线图。

@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class DocumentOut(BaseModel):
@@ -24,3 +24,25 @@ class IngestResult(BaseModel):
     status: str
     chunk_count: int
     embedding_model: str
+
+
+class Citation(BaseModel):
+    """一条引用：答案里的 [n] 对应这里的第 n 项。"""
+
+    chunk_id: uuid.UUID
+    document_id: uuid.UUID
+    document_title: str
+    chunk_index: int
+    content: str
+    score: float = Field(description="余弦相似度，越大越相关")
+
+
+class ChatRequest(BaseModel):
+    question: str = Field(min_length=1, max_length=2000)
+    top_k: int | None = Field(default=None, ge=1, le=20)
+
+
+class ChatResponse(BaseModel):
+    answer: str
+    citations: list[Citation]
+    model: str

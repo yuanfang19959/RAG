@@ -3,11 +3,13 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from rag.api.chat import router as chat_router
 from rag.api.documents import router as documents_router
 from rag.api.health import router as health_router
 from rag.config import get_settings
 from rag.db import create_engine, create_session_factory
 from rag.services.embedding import create_embeddings
+from rag.services.llm import create_chat_model
 
 
 # 应用生命周期：yield 之前 = 启动时；yield 之后 = 关闭时（类似 React mount/unmount）
@@ -19,6 +21,7 @@ async def lifespan(app: FastAPI):
     app.state.engine = create_engine(settings)  # 创建 Postgres 异步引擎（可能为 None）
     app.state.session_factory = create_session_factory(app.state.engine)
     app.state.embeddings = create_embeddings(settings)  # 没配 key 时为 None
+    app.state.llm = create_chat_model(settings)  # 同上
     yield  # 这里开始对外提供服务
     # --- 关闭 ---
     engine = getattr(app.state, "engine", None)  # 安全取属性，没有就返回 None
@@ -45,6 +48,7 @@ def create_app() -> FastAPI:
     # 挂载路由模块
     app.include_router(health_router)
     app.include_router(documents_router)
+    app.include_router(chat_router)
 
     # 装饰器注册路由：GET /  → 下面这个函数处理（类似 app.get('/', ...)）
     @app.get("/")
@@ -58,6 +62,8 @@ def create_app() -> FastAPI:
                 "documents": "GET /documents",
                 "upload": "POST /documents",
                 "ingest": "POST /documents/{id}/ingest",
+                "search": "GET /search?q=...",
+                "chat": "POST /chat",
             },
         }
 
