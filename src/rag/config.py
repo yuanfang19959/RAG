@@ -18,6 +18,16 @@ class Settings(BaseSettings):
         default="http://localhost:3000,http://127.0.0.1:3000"
     )
 
+    # 上传与切块
+    upload_dir: str = "uploads"
+    chunk_size: int = 500
+    chunk_overlap: int = 80
+
+    # 嵌入模型（硅基流动，OpenAI 兼容接口）
+    siliconflow_api_key: str | None = None
+    siliconflow_base_url: str | None = None
+    embedding_model: str = "Pro/BAAI/bge-m3"
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]

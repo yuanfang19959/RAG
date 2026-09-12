@@ -10,12 +10,16 @@ requires-python = ">=3.13"
 dependencies = [
     "asyncpg>=0.31.0",
     "fastapi[standard]>=0.141.1",
+    "langchain-openai>=1.6.2",
+    "langchain-text-splitters>=1.1.2",
+    "pgvector>=0.5.0",
     "pydantic-settings>=2.15.0",
     "sqlalchemy[asyncio]>=2.0.52",
 ]
 
 [project.scripts]
 rag = "rag:main"
+rag-init-db = "rag.scripts.init_db:main"
 
 [build-system]
 requires = ["uv_build>=0.12.13,<0.13.0"]
