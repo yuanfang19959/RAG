@@ -98,6 +98,15 @@ make PG_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
 make PG_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk install
 ```
 
+## 规划与文档
+
+| 文件 | 内容 |
+|------|------|
+| [docs/路线图.md](docs/路线图.md) | 总纲：目标、技术选型、P0–P4 进度与后续需求细节 |
+| [docs/需求卡-模板与P0.md](docs/需求卡-模板与P0.md) | 需求卡模板 + P0 实例 |
+| [docs/需求卡-P1.md](docs/需求卡-P1.md) | P1 文档入库 |
+| [AGENTS.md](AGENTS.md) | 项目上下文速览 |
+
 ## 下一步（P2）
 
-检索 + 拼 prompt + 非流式 `/chat`，返回引用片段。
+检索 + 拼 prompt + 非流式 `/chat`，返回引用片段。详见路线图。
