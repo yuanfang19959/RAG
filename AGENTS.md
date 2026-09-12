@@ -3,7 +3,8 @@
 ## 这是什么
 
 FastAPI + LangChain 的知识库问答（RAG）服务，作者是前端转后端，边做边学。  
-**先读 `docs/路线图.md`**，里面有完整目标、分期进度和 P2/P3/P4 的需求细节。
+**先读 `docs/路线图.md`**，里面有完整目标、分期进度和各期需求细节。
+P0–P3 已完成，当前待做 P4（鉴权 + 接入 PageIo / local-agent）。
 
 ## 作者背景（影响解释方式）
 
@@ -23,6 +24,16 @@ uv run rag-init-db              # 建表，可重复执行
 uv run rag                      # 起服务 :8000
 ```
 
+前端（P3 起）：
+
+```bash
+cd frontend && pnpm install
+PORT=8001 pnpm dev              # dev 在 8001，/api 代理到 8000
+pnpm build                      # 产物到 static/ui，后端挂在 /ui（同源）
+```
+
+静态目录在应用启动时挂载，先起后端再构建会 404，重启后端即可。
+
 ## 关键事实
 
 | 项 | 值 |
@@ -31,6 +42,7 @@ uv run rag                      # 起服务 :8000
 | Embedding | 硅基流动 `Pro/BAAI/bge-m3`，**1024 维** |
 | LLM | DeepSeek（OpenAI 兼容），P2 开始用 |
 | 密钥 | 全在 `.env`（已 gitignore），示例见 `.env.example` |
+| 前端 | umi 4 + **antd 6** + `@ant-design/x` 2（x 的 peer 要求 antd 6，博客用的是 antd 5，靠 iframe 隔离） |
 
 换 embedding 模型必须同步改 `src/rag/models.py` 的 `EMBEDDING_DIM` 并重建 `chunks` 表。
 
@@ -56,3 +68,5 @@ uv run rag                      # 起服务 :8000
 - macOS + Homebrew 装 pgvector：预编译包只有 PG 17/18，PG 16 需源码编译，且要覆盖写死的 SDK 路径（命令见 README）
 - 本机 git 是 2.30，某些新参数不支持
 - 追加内容到 `.env` 前先确认文件末尾有换行，否则会和最后一行粘在一起
+- umi dev 默认端口也是 8000，和后端撞，必须 `PORT=8001`
+- `.umirc.ts` 的 `base` 只能在生产设，dev 下设了会白屏（路由匹配不上）
