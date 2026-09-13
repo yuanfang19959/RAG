@@ -1,7 +1,6 @@
-import { Sender } from '@ant-design/x';
+import { Bubble, Sender } from '@ant-design/x';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { color } from '../theme';
 import { ChatMessage, useRagChat } from '../useRagChat';
 import Answer from './Answer';
 import Citations from './Citations';
@@ -14,57 +13,70 @@ const SUGGESTIONS = [
 
 function UserMessage({ content }: { content: string }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-      <div
-        style={{
-          maxWidth: '85%',
-          padding: '9px 14px',
-          fontSize: 15,
-          lineHeight: 1.6,
-          background: color.bgSubtle,
-          borderRadius: 12,
+    <Bubble
+      placement="end"
+      variant="filled"
+      shape="corner"
+      content={content}
+      styles={{
+        content: {
+          background: '#1677ff',
+          color: '#fff',
+          maxWidth: '36em',
           whiteSpace: 'pre-wrap',
           wordBreak: 'break-word',
-        }}
-      >
-        {content}
-      </div>
+        },
+      }}
+    />
+  );
+}
+
+function AssistantTurn({ message }: { message: ChatMessage }) {
+  const [activeCite, setActiveCite] = useState<number | null>(null);
+
+  return (
+    <div>
+      <Answer
+        content={message.content}
+        streaming={message.streaming}
+        citations={message.citations}
+        onCiteClick={(index) =>
+          setActiveCite((prev) => (prev === index ? null : index))
+        }
+      />
+      {!message.streaming && message.citations?.length ? (
+        <Citations
+          citations={message.citations}
+          activeIndex={activeCite}
+          onActiveIndexChange={setActiveCite}
+        />
+      ) : null}
     </div>
   );
 }
 
 function Turn({ message }: { message: ChatMessage }) {
   if (message.role === 'user') return <UserMessage content={message.content} />;
-
-  return (
-    <div>
-      <Answer content={message.content} streaming={message.streaming} />
-      {!message.streaming && message.citations?.length ? (
-        <Citations citations={message.citations} />
-      ) : null}
-    </div>
-  );
+  return <AssistantTurn message={message} />;
 }
 
 function EmptyState({ onPick }: { onPick: (text: string) => void }) {
   return (
-    <div style={{ paddingTop: 8 }}>
-      <div style={{ fontSize: 15, color: color.textMuted, marginBottom: 14 }}>
-        回答只依据已入库的文档，句末编号可展开对照原文。
+    <div className="rag-empty">
+      <p className="rag-empty-lead">基于本站点博客文章做问答</p>
+      <div className="rag-empty-label">试试这些</div>
+      <div className="rag-empty-suggestions">
+        {SUGGESTIONS.map((text) => (
+          <button
+            key={text}
+            type="button"
+            className="rag-suggest"
+            onClick={() => onPick(text)}
+          >
+            {text}
+          </button>
+        ))}
       </div>
-      <div style={{ fontSize: 13, color: color.textFaint, marginBottom: 8 }}>
-        试试这些
-      </div>
-      {SUGGESTIONS.map((text) => (
-        <div
-          key={text}
-          className="rag-quiet-link"
-          onClick={() => onPick(text)}
-          style={{ fontSize: 14, lineHeight: 2, width: 'fit-content' }}
-        >
-          {text}
-        </div>
-      ))}
     </div>
   );
 }

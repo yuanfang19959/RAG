@@ -1,7 +1,7 @@
 :root {
-  --rag-text: #111;
-  --rag-muted: #666;
-  --rag-faint: #999;
+  --rag-text: rgba(0, 0, 0, 1);
+  --rag-muted: rgba(0, 0, 0, 0.75);
+  --rag-faint: rgba(0, 0, 0, 0.5);
   --rag-border: #e5e5e5;
   --rag-border-light: #ebebeb;
   --rag-subtle: #f5f5f5;
@@ -71,21 +71,47 @@ body {
     margin-bottom: 0.3em;
   }
 
-  code {
-    padding: 1px 5px;
+  // 行内 code：跟深色代码块同一套底，选择器挂在明确 class 上才压得过 x-markdown
+  code.rag-inline-code {
+    padding: 0.15em 0.45em;
+    margin: 0 0.15em;
     font-size: 0.88em;
-    background: var(--rag-subtle);
+    color: #e5c07b;
+    background: #282c34;
     border-radius: 4px;
+    white-space: break-spaces;
   }
 
-  pre {
+  // Prism 代码块：深色主题
+  .ant-codeHighlighter {
+    margin: 0 0 0.75em;
+    border-radius: 8px;
+    overflow: hidden;
+
+    .ant-codeHighlighter-header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .ant-actions-item,
+    button {
+      color: rgba(255, 255, 255, 0.55) !important;
+    }
+  }
+
+  // 无语言标记的围栏代码，跟深色 Prism 对齐
+  .rag-code-fallback {
+    margin: 0 0 0.75em;
     padding: 12px 14px;
     overflow-x: auto;
-    background: var(--rag-subtle);
+    color: #abb2bf;
+    background: #282c34;
+    border: 1px solid #21252b;
     border-radius: 8px;
 
     code {
       padding: 0;
+      font-size: 0.88em;
+      color: inherit;
       background: none;
     }
   }
@@ -96,6 +122,26 @@ body {
     margin: 1em 0 0.5em;
     font-size: 1.05em;
     font-weight: 600;
+  }
+
+  // 句末引用角标：尽量不抢正文
+  .rag-cite-mark {
+    display: inline;
+    margin: 0 1px;
+    padding: 0;
+    font: inherit;
+    font-size: 0.75em;
+    font-weight: 500;
+    line-height: 1;
+    vertical-align: super;
+    color: var(--rag-faint);
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+      color: #1677ff;
+    }
   }
 }
 
@@ -108,6 +154,147 @@ body {
   &:hover {
     color: var(--rag-text);
   }
+}
+
+// 空态：引导文案 + 建议提问
+.rag-empty {
+  padding-top: 12px;
+}
+
+.rag-empty-lead {
+  margin: 0 0 32px;
+  max-width: 28em;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--rag-faint);
+}
+
+.rag-empty-label {
+  margin-bottom: 10px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--rag-faint);
+}
+
+.rag-empty-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rag-suggest {
+  margin: 0;
+  padding: 8px 14px;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--rag-text);
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--rag-border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover {
+    background: var(--rag-subtle);
+    border-color: rgba(0, 0, 0, 0.28);
+  }
+
+  &:active {
+    background: #eee;
+  }
+}
+
+// 底部来源：默认只显示一行开关
+.rag-sources {
+  margin-top: 12px;
+}
+
+.rag-sources-toggle {
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  font-size: 13px;
+  color: var(--rag-faint);
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--rag-text);
+  }
+}
+
+.rag-sources-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rag-source-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  font-size: 13px;
+  color: var(--rag-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  &:hover,
+  &.is-active {
+    color: var(--rag-text);
+  }
+}
+
+.rag-source-item-n {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1677ff;
+}
+
+.rag-source-item-title {
+  border-bottom: 1px solid transparent;
+}
+
+.rag-source-item:hover .rag-source-item-title,
+.rag-source-item.is-active .rag-source-item-title {
+  border-bottom-color: rgba(0, 0, 0, 0.2);
+}
+
+.rag-cite-pop {
+  max-width: 320px;
+  max-height: 240px;
+  overflow: auto;
+}
+
+.rag-cite-pop-title {
+  margin-bottom: 2px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rag-text);
+}
+
+.rag-cite-pop-meta {
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--rag-faint);
+}
+
+.rag-cite-pop-body {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--rag-muted);
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 // 滚动条收细，默认那条太抢眼
@@ -138,11 +325,9 @@ body {
   }
 }
 
-// 内容居中并限宽，移动端收窄留白
+// 全宽内容区，移动端收窄留白
 .rag-container {
   width: 100%;
-  max-width: 760px;
-  margin: 0 auto;
   padding: 0 24px;
 
   @media (max-width: 800px) {
@@ -163,13 +348,38 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-// 输入框在 iOS 上小于 16px 会触发自动放大，锁死
-.ant-sender textarea {
-  font-size: 16px !important;
+// 输入框：轻霓虹边，颜色对齐 favicon 四角星
+.ant-sender {
+  position: relative !important;
+  padding: 8px !important;
+  border: 1px solid transparent !important;
+  border-radius: 14px !important;
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(
+      135deg,
+      #ff4d8d 0%,
+      #ffc107 28%,
+      #3ddc84 58%,
+      #4da3ff 100%
+    )
+      border-box !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 77, 141, 0.06),
+    0 0 18px rgba(77, 163, 255, 0.18),
+    0 0 28px rgba(255, 77, 141, 0.1);
+
+  &:focus-within {
+    box-shadow:
+      0 0 0 1px rgba(255, 77, 141, 0.12),
+      0 0 22px rgba(77, 163, 255, 0.28),
+      0 0 36px rgba(61, 220, 132, 0.16);
+  }
 }
 
-@media (min-width: 801px) {
-  .ant-sender textarea {
-    font-size: 15px !important;
-  }
+.ant-sender textarea {
+  // iOS 小于 16px 会触发自动放大；桌面也统一 16，读起来更放松
+  min-height: 72px !important;
+  font-size: 16px !important;
+  line-height: 1.6 !important;
 }

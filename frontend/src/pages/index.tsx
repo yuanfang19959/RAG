@@ -65,7 +65,7 @@ export default function HomePage() {
             padding: '16px 24px',
           }}
         >
-          <span style={{ fontSize: 16, fontWeight: 600 }}>知识库问答</span>
+          <span style={{ fontSize: 16, fontWeight: 600 }}></span>
           <span
             className="rag-quiet-link"
             onClick={() => setOpen(true)}

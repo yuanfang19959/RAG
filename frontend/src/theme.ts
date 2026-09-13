@@ -3,9 +3,10 @@
  * 挂件嵌进博客时才不会像贴上去的。
  */
 export const color = {
-  text: '#111',
-  textMuted: '#666',
-  textFaint: '#999',
+  // 三级字色：黑 + 透明度，比灰阶更实一点
+  text: 'rgba(0, 0, 0, 1)',
+  textMuted: 'rgba(0, 0, 0, 0.75)',
+  textFaint: 'rgba(0, 0, 0, 0.5)',
   border: '#e5e5e5',
   borderLight: '#ebebeb',
   bgSubtle: '#f5f5f5',

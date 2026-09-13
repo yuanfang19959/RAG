@@ -22,5 +22,12 @@ export default defineConfig({
       pathRewrite: { '^/api': '' },
     },
   },
-  title: 'RAG 问答',
+  title: '平头哥博客站 RAG 问答',
+  links: [
+    {
+      rel: 'icon',
+      href: 'https://kapa666.oss-cn-beijing.aliyuncs.com/uploads/2026/09/13/1789310256265-e006c55cf5c7.jpg',
+      type: 'image/jpeg',
+    },
+  ],
 });
