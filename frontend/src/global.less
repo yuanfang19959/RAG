@@ -113,6 +113,16 @@ body {
 // 滚动条收细，默认那条太抢眼
 .rag-scroll {
   scrollbar-width: thin;
+  // 滚动条本来紧贴正文右边界。用「padding 撑开 + 负 margin 抵消」把它挪进
+  // 父容器的留白里：正文位置不变，滚动条右移，中间就有了间距。
+  padding-right: 12px;
+  margin-right: -12px;
+
+  @media (max-width: 800px) {
+    // 移动端父容器留白本来就窄（16px），少挪一点免得贴到屏幕边
+    padding-right: 8px;
+    margin-right: -8px;
+  }
 
   &::-webkit-scrollbar {
     width: 6px;
